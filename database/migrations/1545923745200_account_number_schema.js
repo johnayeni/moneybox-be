@@ -15,6 +15,7 @@ class AccountNumberSchema extends Schema {
       table.string('account_no', 20).notNullable();
       table.string('account_name', 80).notNullable();
       table.string('bank', 80).notNullable();
+      table.string('bank_code', 3).notNullable();
       table.timestamps();
     });
   }
