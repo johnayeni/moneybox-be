@@ -1,12 +1,14 @@
 'use strict';
 
-const { validate } = use('Validator');
+const { validateAll } = use('Validator');
 const User = use('App/Models/User');
 
 class AuthController {
   // Register a new user
   async register({ request, response }) {
-    const validation = await validate(request.all(), {
+    const data = request.only(['firstname', 'lastname', 'matric_number', 'email', 'password']);
+
+    const validation = await validateAll(data, {
       firstname: 'required',
       lastname: 'required',
       matric_number: 'required|unique:users, matric_number',
@@ -18,7 +20,7 @@ class AuthController {
       return response.status(400).json({ messages: validation.messages() });
     }
 
-    const user = await User.create(request.all());
+    const user = await User.create({ ...data });
 
     if (!user) {
       return response.status(400).json({ message: 'Could not create user' });

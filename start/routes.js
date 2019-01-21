@@ -24,7 +24,16 @@ Route.group(() => {
 }).prefix('auth');
 
 Route.group(() => {
+  // user related routes
   Route.get('user', 'UserController.get');
+  Route.post('user/accountnumber', 'UserController.addAccountNumber');
+  Route.put('user/accountnumber', 'UserController.updateAccountNumber');
+
+  // transanction related routes
+  Route.get('transaction', 'TransactionController.get');
+  Route.post('transaction/deposit', 'TransactionController.deposit');
+  Route.post('transaction/withdraw', 'TransactionController.withdraw');
+  Route.post('transaction/transfer', 'TransactionController.transfer');
 })
   .prefix('api')
   .middleware('auth');

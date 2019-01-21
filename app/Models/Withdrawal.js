@@ -3,7 +3,7 @@
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Model = use('Model');
 
-class AccountNumber extends Model {
+class Withdrawal extends Model {
   /**
    * A relationship on users
    * @method user
@@ -15,4 +15,4 @@ class AccountNumber extends Model {
   }
 }
 
-module.exports = AccountNumber;
+module.exports = Withdrawal;

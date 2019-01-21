@@ -6,6 +6,8 @@ const Hash = use('Hash');
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Model = use('Model');
 
+const Transfer = use('App/Models/Transfer');
+
 class User extends Model {
   static boot() {
     super.boot();
@@ -42,14 +44,92 @@ class User extends Model {
   tokens() {
     return this.hasMany('App/Models/Token');
   }
-  accounts() {
+  /**
+   * A relationship on account number tied to a user
+   *
+   * @method account
+   *
+   * @return {Object}
+   */
+
+  account() {
     return this.hasOne('App/Models/AccountNumber');
   }
-  wallets() {
-    return this.hasOne('App/Models/Wallet');
+  /**
+   * A relationship on deposits tied to a user
+   * @method deposits
+   *
+   * @return {Array}
+   */
+
+  deposits() {
+    return this.hasMany('App/Models/Deposit');
   }
-  transactions() {
-    return this.hasMany('App/Models/Transactions');
+  /**
+   * A relationship on transfers made to other users
+   * @method moneySent
+   *
+   * @return {Array}
+   */
+
+  moneySent() {
+    return this.hasMany('App/Models/Transfer');
+  }
+  /**
+   * A relationship on transfers received to other users
+   * @method moneyReceived
+   *
+   * @return {Array}
+   */
+
+  async moneyReceived() {
+    const { id } = this.toJSON();
+    return await Transfer.query()
+      .where('receiver_id', '=', id)
+      .fetch();
+  }
+  /**
+   * A relationship on withdrawals tied to a user
+   * @method withdrawals
+   *
+   * @return {Array}
+   */
+
+  withdrawals() {
+    return this.hasMany('App/Models/Withdrawal');
+  }
+  /**
+   * Get a users balance by calculating all transactions
+   * @method balance
+   *
+   * @return {Number}
+   */
+
+  async balance() {
+    let balance = 0.0;
+
+    const deposits = await this.deposits().fetch();
+    const moneySent = await this.moneySent().fetch();
+    const moneyReceived = await this.moneyReceived();
+    const withdrawals = await this.withdrawals().fetch();
+
+    for (let deposit of deposits.toJSON()) {
+      balance = balance + deposit.amount;
+    }
+
+    for (let transfer of moneyReceived.toJSON()) {
+      balance = balance + transfer.amount;
+    }
+
+    for (let withdrawal of withdrawals.toJSON()) {
+      balance = balance - withdrawal.amount;
+    }
+
+    for (let transfer of moneySent.toJSON()) {
+      balance = balance - transfer.amount;
+    }
+
+    return balance;
   }
 }
 
