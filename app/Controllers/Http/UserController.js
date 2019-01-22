@@ -10,7 +10,7 @@ const Paystack = require('paystack-api')(sk);
 
 class UserController {
   // get details of authenticated user
-  async get({ auth, response }) {
+  async read({ auth, response }) {
     const user = await auth.getUser();
     const balance = await user.balance();
     const bankAccount = await user.account().fetch();

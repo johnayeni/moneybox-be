@@ -25,7 +25,7 @@ Route.group(() => {
 
 Route.group(() => {
   // user related routes
-  Route.get('user', 'UserController.get');
+  Route.get('user', 'UserController.read');
   Route.post('user/accountnumber', 'UserController.addAccountNumber');
   Route.put('user/accountnumber', 'UserController.updateAccountNumber');
 
