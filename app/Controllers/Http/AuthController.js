@@ -22,11 +22,7 @@ class AuthController {
 
     const user = await User.create({ ...data });
 
-    if (!user) {
-      return response.status(400).json({ message: 'Could not create user' });
-    }
-
-    return response.status(200).json({ message: 'You have successfull created an account' });
+    return response.status(200).json({ message: 'You have successfull created an account', user });
   }
 
   // Login a user

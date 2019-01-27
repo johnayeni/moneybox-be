@@ -12,6 +12,8 @@ class WithdrawalSchema extends Schema {
         .unsigned()
         .references('id')
         .inTable('users');
+      table.string('transfer_code', 256).notNullable();
+      table.string('recipient_code', 256).notNullable();
       table.float('amount').unsigned();
       table.timestamps();
     });

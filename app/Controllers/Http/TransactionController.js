@@ -15,11 +15,6 @@ class TransactionController {
   // get a user's transaction records
   async get({ auth, response }) {
     const user = await auth.getUser();
-
-    if (!user) {
-      return response.status(400).json({ message: 'Could not retrieve transactions' });
-    }
-
     const deposits = await user.deposits().fetch();
     const moneySent = await user.moneySent().fetch();
     const withdrawals = await user.withdrawals().fetch();
@@ -48,10 +43,6 @@ class TransactionController {
 
     const user = await auth.getUser();
 
-    if (!user) {
-      return response.status(400).json({ message: 'Deposit failed' });
-    }
-
     const paymentVerification = await Paystack.transaction.verify({ reference });
 
     if (paymentVerification) {
@@ -73,7 +64,60 @@ class TransactionController {
     return response.status(400).json({ message: 'Deposit failed' });
   }
   // withdraw money from user's account
-  async withdraw({}) {}
+  async withdraw({ auth, request, response }) {
+    const data = request.only(['amount']);
+
+    const user = await auth.getUser();
+
+    if (!user) {
+      return response.status(400).json({ message: 'Withdrawal failed' });
+    }
+
+    const bankDetails = await user.account();
+
+    const transferReceipt = await Paystack.transfer_recipient.create({
+      type: 'nuban',
+      name: bankDetails.account_name,
+      bank_code: bankDetails.bank_code,
+      account_number: bankDetails.account_no,
+    });
+
+    if (transferReceipt) {
+      const {
+        data: { recipient_code },
+      } = transferReceipt;
+      const transfer = await Paystack.transfer.create({
+        source: 'balance',
+        amount: data.amount,
+        recipient: recipient_code,
+      });
+
+      if (transfer) {
+        if (transfer.status) {
+          const {
+            data: { transfer_code, amount },
+          } = transfer;
+
+          const newWithdrawal = await Withdrawal.create({
+            amount,
+            transfer_code,
+            recipient_code,
+            user_id: user.id,
+          });
+
+          return response.status(200).json({
+            message: 'Withdrawal successful',
+            newWithdrawal,
+          });
+        }
+        return response.status(400).json({ message: transfer.message });
+      }
+
+      return response.status(400).json({ message: 'Error with payment gateway' });
+    }
+
+    return response.status(400).json({ message: 'Error with payment gateway' });
+  }
   // transfer money from user's account to another user on the platform
   async transfer({ auth, request, response }) {
     const data = request.only(['receiver_email', 'amount']);
@@ -88,10 +132,6 @@ class TransactionController {
     }
 
     const user = await auth.getUser();
-
-    if (!user) {
-      return response.status(400).json({ message: 'Transfer failed' });
-    }
 
     const userBalance = await user.balance();
     if (data.amount > userBalance) {
@@ -113,10 +153,6 @@ class TransactionController {
       user_id: user.id,
       receiver_id: receiver.id,
     });
-
-    if (!newTransfer) {
-      return response.status(400).json({ message: 'Transfer failed' });
-    }
 
     return response.status(200).json({
       message: 'Transaction successful',

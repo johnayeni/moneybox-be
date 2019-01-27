@@ -44,10 +44,6 @@ class UserController {
 
     const user = await auth.getUser();
 
-    if (!user) {
-      return response.status(400).json({ message: 'Could not add account number' });
-    }
-
     if (await user.account().fetch()) {
       return response.status(400).json({ message: 'Cannot add more than one account number' });
     }
@@ -57,10 +53,6 @@ class UserController {
       account_name,
       user_id: user.id,
     });
-
-    if (!newAccountNumber) {
-      return response.status(400).json({ message: 'Could not add account number' });
-    }
 
     return response
       .status(200)
@@ -91,10 +83,6 @@ class UserController {
     } = accountVerify;
 
     const user = await auth.getUser();
-
-    if (!user) {
-      return response.status(400).json({ message: 'Could not add account number' });
-    }
 
     const accountNumber = await user.account().fetch();
 
