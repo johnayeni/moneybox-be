@@ -11,7 +11,7 @@ class AuthController {
     const validation = await validateAll(data, {
       firstname: 'required',
       lastname: 'required',
-      matric_number: 'required|unique:users, matric_number',
+      matric_number: 'required|unique:users',
       email: 'required|email|unique:users, email',
       password: 'required',
     });

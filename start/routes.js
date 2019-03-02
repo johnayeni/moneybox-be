@@ -17,6 +17,10 @@
 const Route = use('Route');
 
 Route.on('/').render('welcome');
+Route.on('/deposit').render('deposit');
+Route.on('/withdraw').render('withdraw');
+Route.on('/addaccountnumber').render('addaccountnumber');
+Route.on('/transfer').render('transfer');
 
 Route.group(() => {
   Route.post('register', 'AuthController.register').as('register');
