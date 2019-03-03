@@ -17,10 +17,22 @@
 const Route = use('Route');
 
 Route.on('/').render('welcome');
-Route.on('/deposit').render('deposit');
-Route.on('/withdraw').render('withdraw');
-Route.on('/addaccountnumber').render('addaccountnumber');
-Route.on('/transfer').render('transfer');
+
+Route.get('deposit', ({ view }) => {
+  return view.render('deposit');
+});
+
+Route.get('withdraw', ({ view }) => {
+  return view.render('withdraw');
+});
+
+Route.get('transfer', ({ view }) => {
+  return view.render('transfer');
+});
+
+Route.get('addaccountnumber', ({ view }) => {
+  return view.render('addaccountnumber');
+});
 
 Route.group(() => {
   Route.post('register', 'AuthController.register').as('register');

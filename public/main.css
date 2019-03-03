@@ -62,6 +62,10 @@ main {
   padding: 10px 20px;
 }
 
+.button:disabled {
+  opacity: 0.2;
+}
+
 .button-primary {
   color: #ffffff;
   background-color: #800080;

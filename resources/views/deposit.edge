@@ -6,18 +6,17 @@
   {{ style('main') }}
 </head>
 <body>
-  <main>
-    <h1 class="text-primary">Add money to your money box account</h1>
+  <main id="main">
+    <h1 class="text-primary" id="sectionInfo">Add money to your money box account</h1>
     <form id="depositForm">
+      {{ script('https://js.paystack.co/v1/inline.js') }}
       <div class="input-group">
         <label class="input-label">&#8358;</label>
         <input type="number" name="amount" class="input" id="amount" placeholder="Enter amount" required>
       </div>
-      <button type="submit" class="button button-primary">DEPOSIT</button>
+      <button type="submit" class="button button-primary" id="submitButton">DEPOSIT</button>
     </form>
   </main>
 </body>
-<script>
-  
-</script>
+{{ script('deposit') }}
 </html>
