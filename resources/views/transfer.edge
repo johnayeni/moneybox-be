@@ -6,5 +6,20 @@
   {{ style('main') }}
 </head>
 <body>
+  <main id="main">
+    <h1 class="text-primary" id="sectionInfo">Transfer money to another user</h1>
+    <form id="transferForm">
+      <div class="input-group">
+        <label class="input-label">&#8358;</label>
+        <input type="number" name="amount" class="input" id="amount" placeholder="Enter amount" required>
+      </div>
+      <div class="input-group">
+        <label class="input-label">&#x1F600;</label>
+        <input type="text" name="receiver_matric_number" class="input" id="receiver_matric_number" placeholder="Receiver's matric number" required>
+      </div>
+      <button type="submit" class="button button-primary" id="submitButton">Transfer</button>
+    </form>
+  </main>
 </body>
+{{ script('transfer') }}
 </html>

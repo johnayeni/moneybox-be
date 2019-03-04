@@ -6,5 +6,16 @@
   {{ style('main') }}
 </head>
 <body>
+  <main id="main">
+    <h1 class="text-primary" id="sectionInfo">Withdraw money from your money box account</h1>
+    <form id="withdrawForm">
+      <div class="input-group">
+        <label class="input-label">&#8358;</label>
+        <input type="number" name="amount" class="input" id="amount" placeholder="Enter amount" required>
+      </div>
+      <button type="submit" class="button button-primary" id="submitButton">Withdraw</button>
+    </form>
+  </main>
 </body>
+{{ script('withdraw') }}
 </html>

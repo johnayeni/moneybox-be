@@ -53,7 +53,7 @@ class TransactionController {
         const newDeposit = await Deposit.create({
           reference,
           user_id: user.id,
-          // divide amount by 10 becuase paytack retruns in kobo
+          // divide amount by 100 becuase paytack retruns in kobo
           amount: Number(amount) / 100,
         });
 
@@ -125,10 +125,10 @@ class TransactionController {
   }
   // transfer money from user's account to another user on the platform
   async transfer({ auth, request, response }) {
-    const data = request.only(['receiver_email', 'amount']);
+    const data = request.only(['receiver_matric_number', 'amount']);
 
     const validation = await validateAll(data, {
-      receiver_email: 'required',
+      receiver_matric_number: 'required',
       amount: 'required',
     });
 
@@ -143,7 +143,7 @@ class TransactionController {
       return response.status(400).json({ message: 'Insufficient funds' });
     }
 
-    const receiver = await User.findBy('email', data.receiver_email);
+    const receiver = await User.findBy('matric_number', data.receiver_matric_number);
 
     if (!receiver) {
       return response.status(400).json({ message: 'Transfer failed, receiver invalid' });
@@ -154,7 +154,7 @@ class TransactionController {
     }
 
     const newTransfer = await Transfer.create({
-      // multiply by 10 because paystack receies amount value  in kobo
+      // multiply by 100 because paystack receies amount value  in kobo
       amount: Number(data.amount) * 100,
       user_id: user.id,
       receiver_id: receiver.id,
