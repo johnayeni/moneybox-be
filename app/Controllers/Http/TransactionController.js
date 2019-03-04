@@ -50,7 +50,12 @@ class TransactionController {
         data: { status, amount, gateway_response },
       } = paymentVerification;
       if (status == 'success') {
-        const newDeposit = await Deposit.create({ reference, user_id: user.id, amount });
+        const newDeposit = await Deposit.create({
+          reference,
+          user_id: user.id,
+          // divide amount by 10 becuase paytack retruns in kobo
+          amount: Number(amount) / 100,
+        });
 
         return response.status(200).json({
           message: gateway_response,
@@ -149,7 +154,8 @@ class TransactionController {
     }
 
     const newTransfer = await Transfer.create({
-      amount: data.amount,
+      // multiply by 10 because paystack receies amount value  in kobo
+      amount: Number(data.amount) * 100,
       user_id: user.id,
       receiver_id: receiver.id,
     });

@@ -22,20 +22,22 @@ const payWithPaystack = (amount, email) => {
       const { reference } = response;
       fetch('/api/transaction/deposit', {
         method: 'POST',
-        data: JSON.stringify({ reference }),
+        body: JSON.stringify({ reference }),
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
       })
-        .then((res) => res.json())
-        .then((jsonBody) => {
-          alert(jsonBody.message);
-          submitButton.setAttribute('disabled', false);
+        .then(function(res) {
+          return res.json();
         })
-        .catch((err) => {
-          alert('Something went wrong!');
+        .then(function(jsonBody) {
+          sectionInfo.innerHTML = jsonBody.message;
+          form.style.display = 'none';
+        })
+        .catch(function(err) {
           submitButton.setAttribute('disabled', false);
+          alert('Something went wrong!');
         });
     },
     onClose: function() {
@@ -48,5 +50,5 @@ const payWithPaystack = (amount, email) => {
 form.onsubmit = async (event) => {
   event.preventDefault();
   submitButton.setAttribute('disabled', true);
-  payWithPaystack(Number(form.amount.value), email);
+  payWithPaystack(Number(form.amount.value) * 100, email);
 };
