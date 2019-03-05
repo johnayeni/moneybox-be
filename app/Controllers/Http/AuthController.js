@@ -20,7 +20,7 @@ class AuthController {
       return response.status(400).json({ messages: validation.messages() });
     }
 
-    const user = await User.create({ ...data, matric_number: matric_number.toLowerCase() });
+    const user = await User.create({ ...data, matric_number: data.matric_number.toLowerCase() });
 
     return response.status(200).json({ message: 'You have successfull created an account', user });
   }
