@@ -37,7 +37,7 @@ const payWithPaystack = (amount, email) => {
         })
         .catch(function(err) {
           submitButton.setAttribute('disabled', false);
-          alert('Something went wrong!');
+          alert(err.response.message || err.message || 'Something went wrong!');
         });
     },
     onClose: function() {

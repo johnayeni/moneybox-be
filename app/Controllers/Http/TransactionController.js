@@ -70,12 +70,19 @@ class TransactionController {
   }
   // withdraw money from user's account
   async withdraw({ auth, request, response }) {
-    const data = request.only(['amount']);
+    const data = request.only(['amount', 'password']);
 
     const user = await auth.getUser();
 
-    if (!user) {
-      return response.status(400).json({ message: 'Withdrawal failed' });
+    const verifyPassword = await auth.attempt(user.email, data.password);
+
+    if (!verifyPassword) {
+      return response.status(401).json({ message: 'Transfer failed, unauthorized use' });
+    }
+
+    const userBalance = await user.balance();
+    if (Number(data.amount) > Number(userBalance)) {
+      return response.status(400).json({ message: 'Insufficient funds' });
     }
 
     const bankDetails = await user.account();
@@ -125,11 +132,12 @@ class TransactionController {
   }
   // transfer money from user's account to another user on the platform
   async transfer({ auth, request, response }) {
-    const data = request.only(['receiver_matric_number', 'amount']);
+    const data = request.only(['receiver_matric_number', 'amount', 'password']);
 
     const validation = await validateAll(data, {
       receiver_matric_number: 'required',
       amount: 'required',
+      password: 'required',
     });
 
     if (validation.fails()) {
@@ -138,12 +146,20 @@ class TransactionController {
 
     const user = await auth.getUser();
 
+    const verifyPassword = await auth.attempt(user.email, data.password);
+
+    if (!verifyPassword) {
+      return response.status(401).json({ message: 'Transfer failed, unauthorized use' });
+    }
+
     const userBalance = await user.balance();
-    if (data.amount > userBalance) {
+    if (Number(data.amount) > Number(userBalance)) {
       return response.status(400).json({ message: 'Insufficient funds' });
     }
 
-    const receiver = await User.findBy('matric_number', data.receiver_matric_number);
+    const receiver = await User.query()
+      .where('matric_number', data.receiver_matric_number)
+      .first();
 
     if (!receiver) {
       return response.status(400).json({ message: 'Transfer failed, receiver invalid' });

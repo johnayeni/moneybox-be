@@ -10,10 +10,10 @@ if (!token) {
   form.style.display = 'none';
 }
 
-const withdrawMoney = (amount) => {
+const withdrawMoney = (amount, password) => {
   fetch('/api/transaction/withdraw', {
     method: 'POST',
-    body: JSON.stringify({ amount }),
+    body: JSON.stringify({ amount, password }),
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
@@ -28,12 +28,12 @@ const withdrawMoney = (amount) => {
     })
     .catch(function(err) {
       submitButton.setAttribute('disabled', false);
-      alert('Something went wrong!');
+      alert(err.response.message || err.message || 'Something went wrong!');
     });
 };
 
 form.onsubmit = async (event) => {
   event.preventDefault();
   submitButton.setAttribute('disabled', true);
-  withdrawMoney(Number(form.amount.value));
+  withdrawMoney(Number(form.amount.value), form.password.value);
 };

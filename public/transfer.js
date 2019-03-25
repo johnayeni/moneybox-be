@@ -10,10 +10,10 @@ if (!token) {
   form.style.display = 'none';
 }
 
-const transferMoney = (amount, receiver_matric_number) => {
+const transferMoney = (amount, receiver_matric_number, password) => {
   fetch('/api/transaction/transfer', {
     method: 'POST',
-    body: JSON.stringify({ amount, receiver_matric_number }),
+    body: JSON.stringify({ amount, receiver_matric_number, password }),
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
@@ -28,12 +28,12 @@ const transferMoney = (amount, receiver_matric_number) => {
     })
     .catch(function(err) {
       submitButton.setAttribute('disabled', false);
-      alert('Something went wrong!');
+      alert(err.response.message || err.message || 'Something went wrong!');
     });
 };
 
 form.onsubmit = async (event) => {
   event.preventDefault();
   submitButton.setAttribute('disabled', true);
-  transferMoney(Number(form.amount.value), form.receiver_matric_number.value);
+  transferMoney(Number(form.amount.value), form.receiver_matric_number.value, form.password.value);
 };

@@ -31,6 +31,12 @@ class AuthController {
     const { token } = await auth.attempt(email, password);
     return response.status(200).json({ message: 'Logged in successfully', token });
   }
+
+  // log out a user to destroy all tokens
+  async logout({ auth, response }) {
+    await auth.logout();
+    return response.status(200).json({ message: 'Logged out successfully', token });
+  }
 }
 
 module.exports = AuthController;
