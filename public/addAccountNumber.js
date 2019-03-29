@@ -303,12 +303,12 @@ const BANKS = [
 
 // Object.freeze(BANKS);
 
-const BankcodeInput = document.querySelector('#bank_code');
+const BankcodeInput = document.querySelector('#bank');
 
 for (let bank of BANKS) {
   BankcodeInput.innerHTML = `
   ${BankcodeInput.innerHTML}
-  <option value="${bank.code}">${bank.name}</option>
+  <option value="${bank.code}|${bank.name}">${bank.name}</option>
   `;
 }
 
@@ -324,10 +324,14 @@ if (!token) {
   form.style.display = 'none';
 }
 
-const transferMoney = (account_no, bank_code) => {
+const transferMoney = (account_no, bank) => {
   fetch('/api/user/accountnumber', {
     method: 'POST',
-    body: JSON.stringify({ account_no, bank_code }),
+    body: JSON.stringify({
+      account_no,
+      bank: bank.slice(bank.indexOf('|') + 1, bank.length),
+      bank_code: bank.slice(0, bank.indexOf('|')),
+    }),
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
@@ -342,12 +346,16 @@ const transferMoney = (account_no, bank_code) => {
     })
     .catch(function(err) {
       submitButton.setAttribute('disabled', false);
-      alert(err.response.message || err.message || 'Something went wrong!');
+      let message;
+      if (err.response && err.response.message) {
+        message = err.response;
+      }
+      alert(message || err.message || 'Something went wrong!');
     });
 };
 
 form.onsubmit = async (event) => {
   event.preventDefault();
   submitButton.setAttribute('disabled', true);
-  transferMoney(form.account_no.value, form.bank_code.value);
+  transferMoney(form.account_no.value, form.bank.value);
 };

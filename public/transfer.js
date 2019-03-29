@@ -27,8 +27,17 @@ const transferMoney = (amount, receiver_matric_number, password) => {
       form.style.display = 'none';
     })
     .catch(function(err) {
+      console.log(err);
       submitButton.setAttribute('disabled', false);
-      alert(err.response.message || err.message || 'Something went wrong!');
+      if (err.status == 401) {
+        alert('Unauthorized!');
+      } else {
+        let message;
+        if (err.response && err.response.message) {
+          message = err.response;
+        }
+        alert(message || err.message || 'Something went wrong!');
+      }
     });
 };
 

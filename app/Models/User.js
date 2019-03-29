@@ -85,7 +85,7 @@ class User extends Model {
   async moneyReceived() {
     const { id } = this.toJSON();
     return await Transfer.query()
-      .where('receiver_id', '=', id)
+      .where('receiver_id', id)
       .fetch();
   }
   /**
@@ -117,8 +117,8 @@ class User extends Model {
       balance = balance + deposit.amount;
     }
 
-    for (let transfer of moneyReceived.toJSON()) {
-      balance = balance + transfer.amount;
+    for (let instance of moneyReceived.toJSON()) {
+      balance = balance + instance.amount;
     }
 
     for (let withdrawal of withdrawals.toJSON()) {

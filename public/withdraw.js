@@ -28,7 +28,15 @@ const withdrawMoney = (amount, password) => {
     })
     .catch(function(err) {
       submitButton.setAttribute('disabled', false);
-      alert(err.response.message || err.message || 'Something went wrong!');
+      if (err.status == 401) {
+        alert('Unauthorized!');
+      } else {
+        let message;
+        if (err.response && err.response.message) {
+          message = err.response;
+        }
+        alert(message || err.message || 'Something went wrong!');
+      }
     });
 };
 

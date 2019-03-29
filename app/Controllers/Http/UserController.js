@@ -21,10 +21,11 @@ class UserController {
 
   // add a user's account number
   async addAccountNumber({ auth, request, response }) {
-    const data = request.only(['account_no', 'bank_code']);
+    const data = request.only(['account_no', 'bank', 'bank_code']);
 
     const validation = await validateAll(data, {
       account_no: 'required',
+      bank: 'required',
       bank_code: 'required',
     });
 

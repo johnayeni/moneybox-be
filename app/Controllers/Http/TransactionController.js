@@ -6,6 +6,7 @@ const User = use('App/Models/User');
 const Deposit = use('App/Models/Deposit');
 const Transfer = use('App/Models/Transfer');
 const Withdrawal = use('App/Models/Withdrawal');
+const Hash = use('Hash');
 
 const sk = Env.get('PAYSTACK_SECRET_KEY');
 
@@ -74,14 +75,18 @@ class TransactionController {
 
     const user = await auth.getUser();
 
-    const verifyPassword = await auth.attempt(user.email, data.password);
+    const userFromDB = await User.query()
+      .where('email', user.email)
+      .first();
 
-    if (!verifyPassword) {
-      return response.status(401).json({ message: 'Transfer failed, unauthorized use' });
+    const passwordVerified = await Hash.verify(data.password, userFromDB.password);
+
+    if (!passwordVerified) {
+      return response.status(400).json({ message: 'Transfer failed, unauthorized use' });
     }
 
     const userBalance = await user.balance();
-    if (Number(data.amount) > Number(userBalance)) {
+    if (Number(data.amount) >= Number(userBalance)) {
       return response.status(400).json({ message: 'Insufficient funds' });
     }
 
@@ -146,14 +151,18 @@ class TransactionController {
 
     const user = await auth.getUser();
 
-    const verifyPassword = await auth.attempt(user.email, data.password);
+    const userFromDB = await User.query()
+      .where('email', user.email)
+      .first();
 
-    if (!verifyPassword) {
-      return response.status(401).json({ message: 'Transfer failed, unauthorized use' });
+    const passwordVerified = await Hash.verify(data.password, userFromDB.password);
+
+    if (!passwordVerified) {
+      return response.status(400).json({ message: 'Transfer failed, unauthorized use' });
     }
 
     const userBalance = await user.balance();
-    if (Number(data.amount) > Number(userBalance)) {
+    if (Number(data.amount) >= Number(userBalance)) {
       return response.status(400).json({ message: 'Insufficient funds' });
     }
 
@@ -170,8 +179,7 @@ class TransactionController {
     }
 
     const newTransfer = await Transfer.create({
-      // multiply by 100 because paystack receies amount value  in kobo
-      amount: Number(data.amount) * 100,
+      amount: Number(data.amount),
       user_id: user.id,
       receiver_id: receiver.id,
     });
