@@ -12,6 +12,9 @@ class TransferSchema extends Schema {
         .unsigned()
         .references('id')
         .inTable('users');
+      table
+        .integer('receiver_id')
+        .unsigned();
       table.float('amount').unsigned();
       table.timestamps();
     });
