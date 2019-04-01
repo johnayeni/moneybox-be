@@ -97,7 +97,7 @@ class TransactionController {
     }
 
     const newWithdrawal = await Withdrawal.create({
-      amount,
+      amount: data.amount,
       transfer_code: `${Math.floor(Math.random() * 1000000000 + 1)}`,
       recipient_code: `${Math.floor(Math.random() * 1000000000 + 1)}`,
       user_id: user.id,
