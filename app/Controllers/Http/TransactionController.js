@@ -92,6 +92,10 @@ class TransactionController {
 
     const bankDetails = await user.account().fetch();
 
+    if (!bankDetails) {
+      return response.status(400).json({ message: 'You have not added your account number' });
+    }
+
     const transferReceipt = await Paystack.transfer_recipient.create({
       type: 'nuban',
       name: bankDetails.account_name,
