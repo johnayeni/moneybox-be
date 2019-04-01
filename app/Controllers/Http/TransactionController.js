@@ -96,48 +96,60 @@ class TransactionController {
       return response.status(400).json({ message: 'You have not added your account number' });
     }
 
-    const transferReceipt = await Paystack.transfer_recipient.create({
-      type: 'nuban',
-      name: bankDetails.account_name,
-      bank_code: bankDetails.bank_code,
-      account_number: bankDetails.account_no,
+    const newWithdrawal = await Withdrawal.create({
+      amount,
+      transfer_code: `${Math.floor(Math.random() * 1000000000 + 1)}`,
+      recipient_code: `${Math.floor(Math.random() * 1000000000 + 1)}`,
+      user_id: user.id,
     });
 
-    if (transferReceipt) {
-      const {
-        data: { recipient_code },
-      } = transferReceipt;
-      const transfer = await Paystack.transfer.create({
-        source: 'balance',
-        amount: data.amount,
-        recipient: recipient_code,
-      });
+    return response.status(200).json({
+      message: 'Withdrawal successful',
+      newWithdrawal,
+    });
 
-      if (transfer) {
-        if (transfer.status) {
-          const {
-            data: { transfer_code, amount },
-          } = transfer;
+    // const transferReceipt = await Paystack.transfer_recipient.create({
+    //   type: 'nuban',
+    //   name: bankDetails.account_name,
+    //   bank_code: bankDetails.bank_code,
+    //   account_number: bankDetails.account_no,
+    // });
 
-          const newWithdrawal = await Withdrawal.create({
-            amount,
-            transfer_code,
-            recipient_code,
-            user_id: user.id,
-          });
+    // if (transferReceipt) {
+    //   const {
+    //     data: { recipient_code },
+    //   } = transferReceipt;
+    //   const transfer = await Paystack.transfer.create({
+    //     source: 'balance',
+    //     amount: data.amount,
+    //     recipient: recipient_code,
+    //   });
 
-          return response.status(200).json({
-            message: 'Withdrawal successful',
-            newWithdrawal,
-          });
-        }
-        return response.status(400).json({ message: transfer.message });
-      }
+    //   if (transfer) {
+    //     if (transfer.status) {
+    //       const {
+    //         data: { transfer_code, amount },
+    //       } = transfer;
 
-      return response.status(400).json({ message: 'Error with payment gateway' });
-    }
+    //       const newWithdrawal = await Withdrawal.create({
+    //         amount,
+    //         transfer_code,
+    //         recipient_code,
+    //         user_id: user.id,
+    //       });
 
-    return response.status(400).json({ message: 'Error with payment gateway' });
+    //       return response.status(200).json({
+    //         message: 'Withdrawal successful',
+    //         newWithdrawal,
+    //       });
+    //     }
+    //     return response.status(400).json({ message: transfer.message });
+    //   }
+
+    //   return response.status(400).json({ message: 'Error with payment gateway' });
+    // }
+
+    // return response.status(400).json({ message: 'Error with payment gateway' });
   }
   // transfer money from user's account to another user on the platform
   async transfer({ auth, request, response }) {
