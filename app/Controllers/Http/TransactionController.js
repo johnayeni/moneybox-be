@@ -90,7 +90,7 @@ class TransactionController {
       return response.status(400).json({ message: 'Insufficient funds' });
     }
 
-    const bankDetails = await user.account();
+    const bankDetails = await user.account().fetch();
 
     const transferReceipt = await Paystack.transfer_recipient.create({
       type: 'nuban',
